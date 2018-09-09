@@ -2,12 +2,21 @@ var builder = require('botbuilder');
 var restify = require('restify');
 
 /*
-Bot Framework Connecters: 2 types - They are services used to connect to chat channels (skype, slack, teams).
-Console Conencter - Used to connect bot to a terminal. This is useful for development and testing.
+Chat Connecter - Used to connect us to skype, facebook and slack.
 */
 
+// Setup Restify Server
+var server = restify.createServer();
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+    console.log('%s listening to %s', server.name, server.url);
+});
+
 // Console connecter
-var connector = new builder.ConsoleConnector().listen();
+var connector = new builder.ChatConnector();
+
+// Connect chat connector to restify
+server.post('/api/messages', connector.listen());
+
 // Used to send and recive information to the bot.
 // Default dialog handler - Informing message from user will trigger this message.
 var bot = new builder.UniversalBot(connector, function(session) {
